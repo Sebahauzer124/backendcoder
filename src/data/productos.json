@@ -1,0 +1,82 @@
+[
+  {
+    "id": "1",
+    "title": "walter badesso y primoran",
+    "description": "ME VUELVE LOCO LA PUPERA DE MARIA",
+    "code": "CDE123",
+    "price": 29.99,
+    "status": true,
+    "stock": 50,
+    "category": "Ropa deportiva",
+    "thumbnails": [
+      "images/camiseta1.jpg",
+      "images/camiseta2.jpg"
+    ]
+  },
+  {
+    "id": "3",
+    "title": "Botella de Agua",
+    "description": "Botella reutilizable de 1 litro",
+    "code": "BOTT789",
+    "price": 9.99,
+    "status": true,
+    "stock": 100,
+    "category": "Accesorios deportivos",
+    "thumbnails": []
+  },
+  {
+    "id": "4",
+    "title": "Botella",
+    "description": "Botella reutilizable de 1 litro",
+    "code": "BOTT789",
+    "price": 9.99,
+    "status": true,
+    "stock": 100,
+    "category": "Accesorios deportivos",
+    "thumbnails": []
+  },
+  {
+    "id": "4",
+    "title": "Botella",
+    "description": "Botella reutilizable de 1 litro",
+    "code": "BOTT789",
+    "price": 9.99,
+    "status": true,
+    "stock": 100,
+    "category": "Accesorios deportivos",
+    "thumbnails": []
+  },
+  {
+    "id": "4",
+    "title": "Botella",
+    "description": "Botella reutilizable de 1 litro",
+    "code": "BOTT789",
+    "price": 9.99,
+    "status": true,
+    "stock": 100,
+    "category": "Accesorios deportivos",
+    "thumbnails": []
+  },
+  {
+    "id": "7",
+    "title": "Botella",
+    "description": "Botella reutilizable de 1 litro",
+    "code": "BOTT789",
+    "price": 9.99,
+    "status": true,
+    "stock": 100,
+    "category": "Accesorios deportivos",
+    "thumbnails": []
+  },
+  {
+    "id": "8",
+    "title": "yapurinha",
+    "description": "oh vosse se fala portugeis",
+    "code": "nyapurinh23",
+    "price": 9.99,
+    "status": true,
+    "stock": 100,
+    "category": "Accesorios deportivos",
+    "thumbnails": []
+  }
+]
