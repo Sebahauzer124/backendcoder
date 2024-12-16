@@ -26,30 +26,32 @@ const writeProductsFile = async (products) => {
     }
 };
 
-// ** Ruta GET / - Listar todos los productos **
+// ** Ruta GET / - Listar todos los productos con limitación opcional **
 productsRouter.get("/", async (req, res) => {
     try {
         const products = await readProductsFile();
-        res.json(products);  // Devuelve el listado de productos en formato JSON
+        const { limit } = req.query; // Obtener el parámetro 'limit' de la URL
+
+        if (limit) {
+            const limitedProducts = products.slice(0, parseInt(limit)); // Limitar los productos
+            return res.json(limitedProducts);
+        }
+
+        res.json(products); // Devuelve el listado completo de productos en formato JSON
     } catch (error) {
         res.status(500).json({ error: "Hubo un problema al obtener los productos." });
     }
 });
 
-
 productsRouter.get("/:pid", async (req, res) => {
     try {
         const products = await readProductsFile();
         const product = products.find(product => product.id === req.params.pid);
-            res.json(product);
-       
-    }
-    catch{
+        res.json(product);
+    } catch {
         res.status(404).json({ error: "Producto no encontrado." });
     }
-
-})
-
+});
 
 productsRouter.post("/", async (req, res) => {
     const { title, description, code, price, stock, category, thumbnails = [] } = req.body;
@@ -101,7 +103,6 @@ productsRouter.delete("/:pid", async (req, res) => {
     }
 });
 
-
 productsRouter.put("/:pid", async (req, res) => {
     const { pid } = req.params;
     const updateFields = req.body;
@@ -126,6 +127,5 @@ productsRouter.put("/:pid", async (req, res) => {
         res.status(500).json({ error: "Hubo un problema al actualizar el producto" });
     }
 });
-
 
 export default productsRouter;
