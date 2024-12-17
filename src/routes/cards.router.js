@@ -37,8 +37,6 @@ cardsRouter.get("/", async (req, res) => {
     }
 });
 
-
-
 // ** Ruta GET /:cid - Obtener productos de un carrito por ID **
 cardsRouter.get("/:cid", async (req, res) => {
     const { cid } = req.params;
@@ -81,6 +79,32 @@ cardsRouter.post("/:cid/product/:pid", async (req, res) => {
         res.json({ message: "Producto agregado con éxito", carrito: card });
     } catch (error) {
         res.status(500).json({ error: "Hubo un problema al agregar el producto al carrito." });
+    }
+});
+
+// ** Ruta POST / - Crear un nuevo carrito **
+cardsRouter.post("/", async (req, res) => {
+    try {
+        const cards = await readCardsFile();
+
+        // Generar un ID único para el nuevo carrito
+        const newId = cards.length > 0 ? String(Number(cards[cards.length - 1].id) + 1) : "1";
+
+        // Crear un nuevo carrito con estructura inicial
+        const newCard = {
+            id: newId,
+            products: []
+        };
+
+        // Agregar el nuevo carrito a la lista de carritos
+        cards.push(newCard);
+
+        // Guardar los cambios en el archivo
+        await writeCardsFile(cards);
+
+        res.status(201).json({ message: "Carrito creado con éxito", carrito: newCard });
+    } catch (error) {
+        res.status(500).json({ error: "Hubo un problema al crear el carrito." });
     }
 });
 
