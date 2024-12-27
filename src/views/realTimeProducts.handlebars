@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos en Tiempo Real</title>
+    <link rel="stylesheet" href="css/realTimeProducts.css">
+</head>
+<body>
+    <h1>Productos en Tiempo Real</h1>
+
+    <!-- Listado de productos -->
+    <ul id="productos-lista">
+        {{#each products}}
+        <li id="producto-{{this.id}}">
+            {{this.title}} - {{this.description}} - Código: {{this.code}} - ${{this.price}} - Stock: {{this.stock}} - Categoría: {{this.category}}
+            <button onclick="eliminarProducto('{{this.id}}')">Eliminar</button>
+        </li>
+        {{/each}}
+    </ul>
+
+    <h2>Agregar Producto</h2>
+    <form id="crear-producto-form">
+        <input type="text" id="title" placeholder="Título" required>
+        <input type="text" id="description" placeholder="Descripción" required>
+        <input type="text" id="code" placeholder="Código" required>
+        <input type="number" id="price" placeholder="Precio" required>
+        <input type="number" id="stock" placeholder="Stock" required>
+        <input type="text" id="category" placeholder="Categoría" required>
+        <input type="text" id="thumbnails" placeholder="Thumbnails (separados por comas)">
+        <button type="submit">Agregar Producto</button>
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="/js/realTimeProducts.js"></script>
+</body>
+</html>

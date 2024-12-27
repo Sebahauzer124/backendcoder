@@ -70,13 +70,14 @@
   },
   {
     "id": "8",
-    "title": "yapurinha",
-    "description": "oh vosse se fala portugeis",
-    "code": "nyapurinh23",
-    "price": 9.99,
-    "status": true,
-    "stock": 100,
-    "category": "Accesorios deportivos",
-    "thumbnails": []
+    "title": "fdsfds",
+    "description": "fsdfds",
+    "code": "fdsfsd",
+    "price": "6",
+    "stock": "6",
+    "category": "fdsfds",
+    "thumbnails": [
+      ""
+    ]
   }
 ]
