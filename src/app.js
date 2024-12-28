@@ -66,31 +66,46 @@ app.get("/realtimeproducts", async (req, res) => {
 });
 
 // WebSocket: conexión
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
     console.log("Cliente conectado");
 
-    // Emitir la lista inicial de productos
-    readProductsFile().then((products) => {
+    try {
+        // Emitir la lista inicial de productos
+        const products = await readProductsFile();
         socket.emit("updateProducts", products);
-    });
+    } catch (error) {
+        console.error("Error al leer los productos:", error);
+        socket.emit("error", "No se pudo cargar la lista de productos.");
+    }
 
     // Escuchar eventos de creación de productos
     socket.on("createProduct", async (product) => {
-        const products = await readProductsFile();
-        products.push(product);
-        await writeProductsFile(products);
+        try {
+            const products = await readProductsFile();
+            products.push(product);
+            await writeProductsFile(products);
 
-        // Emitir la lista actualizada a todos los clientes
-        io.emit("updateProducts", products);
+            // Emitir la lista actualizada a todos los clientes
+            io.emit("updateProducts", products);
+        } catch (error) {
+            console.error("Error al crear el producto:", error);
+            socket.emit("error", "No se pudo crear el producto.");
+        }
     });
 
     // Escuchar eventos de eliminación de productos
     socket.on("deleteProduct", async (productId) => {
-        let products = await readProductsFile();
-        products = products.filter((p) => p.id !== productId);
-        await writeProductsFile(products);
+        try {
+            let products = await readProductsFile();
+            products = products.filter((p) => p.id !== productId);
+            await writeProductsFile(products);
 
-        // Emitir la lista actualizada a todos los clientes
-        io.emit("updateProducts", products);
+            // Emitir la lista actualizada a todos los clientes
+            io.emit("updateProducts", products);
+        } catch (error) {
+            console.error("Error al eliminar el producto:", error);
+            socket.emit("error", "No se pudo eliminar el producto.");
+        }
     });
 });
+

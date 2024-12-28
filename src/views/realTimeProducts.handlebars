@@ -11,12 +11,7 @@
 
     <!-- Listado de productos -->
     <ul id="productos-lista">
-        {{#each products}}
-        <li id="producto-{{this.id}}">
-            {{this.title}} - {{this.description}} - Código: {{this.code}} - ${{this.price}} - Stock: {{this.stock}} - Categoría: {{this.category}}
-            <button onclick="eliminarProducto('{{this.id}}')">Eliminar</button>
-        </li>
-        {{/each}}
+      
     </ul>
 
     <h2>Agregar Producto</h2>

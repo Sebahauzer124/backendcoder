@@ -67,17 +67,5 @@
     "stock": 100,
     "category": "Accesorios deportivos",
     "thumbnails": []
-  },
-  {
-    "id": "8",
-    "title": "fdsfds",
-    "description": "fsdfds",
-    "code": "fdsfsd",
-    "price": "6",
-    "stock": "6",
-    "category": "fdsfds",
-    "thumbnails": [
-      ""
-    ]
   }
 ]
