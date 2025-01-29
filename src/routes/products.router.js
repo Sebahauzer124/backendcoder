@@ -1,140 +1,128 @@
-import { Router } from "express";
-import fs from "fs/promises";
-import path from "path";
+import express from "express";
+import ProductManager from "../managers/product-manager-db.js";
 
-const productsRouter = Router();
+const router = express.Router();
+const productManager = new ProductManager();
 
-// Ruta absoluta del archivo de productos
-const productsFilePath = path.resolve("src", "data", "productos.json");
-
-// Leer el archivo JSON de productos
-const readProductsFile = async () => {
+// Obtener todos los productos con paginación, orden y filtros
+router.get("/", async (req, res) => {
     try {
-        const data = await fs.readFile(productsFilePath, "utf-8");
-        return JSON.parse(data);
+        const { limit = 10, page = 1, sort, query } = req.query;
+
+        // Convertir los parámetros limit y page a enteros
+        const productos = await productManager.getProducts({
+            limit: parseInt(limit),
+            page: parseInt(page),
+            sort,
+            query,
+        });
+
+        console.log("Productos obtenidos:", productos);
+
+        res.json({
+            status: 'success',
+            payload: productos.docs,
+            totalPages: productos.totalPages,
+            prevPage: productos.prevPage,
+            nextPage: productos.nextPage,
+            page: productos.page,
+            hasPrevPage: productos.hasPrevPage,
+            hasNextPage: productos.hasNextPage,
+            prevLink: productos.prevLink,
+            nextLink: productos.nextLink,
+        });
     } catch (error) {
-        console.error("Error leyendo el archivo:", error);
-        return []; // Retorna un arreglo vacío en caso de error
+        console.error("Error al obtener productos", error);
+        res.status(500).json({
+            status: 'error',
+            error: "Error interno del servidor"
+        });
     }
-};
+});
 
-// Escribir en el archivo JSON de productos
-const writeProductsFile = async (products) => {
+// Obtener un producto por su ID
+router.get("/:pid", async (req, res) => {
+    const id = req.params.pid;
+
     try {
-        await fs.writeFile(productsFilePath, JSON.stringify(products, null, 2));
-    } catch (error) {
-        console.error("Error escribiendo el archivo:", error);
-    }
-};
-
-// ** Ruta GET / - Listar todos los productos con límite opcional **
-productsRouter.get("/", async (req, res) => {
-    try {
-        const products = await readProductsFile();
-        const { limit } = req.query;
-
-        if (limit) {
-            const limitedProducts = products.slice(0, parseInt(limit));
-            return res.json(limitedProducts);
+        const producto = await productManager.getProductById(id);
+        if (!producto) {
+            return res.status(404).json({
+                error: "Producto no encontrado"
+            });
         }
 
-        res.json(products);
+        res.json(producto);
     } catch (error) {
-        res.status(500).json({ error: "Hubo un problema al obtener los productos." });
+        console.error("Error al obtener producto", error);
+        res.status(500).json({
+            error: "Error interno del servidor"
+        });
     }
 });
 
-// ** Ruta GET /:pid - Obtener producto por ID **
-productsRouter.get("/:pid", async (req, res) => {
-    try {
-        const products = await readProductsFile();
-        const product = products.find((product) => product.id === req.params.pid);
+// Agregar un nuevo producto
+router.post("/", async (req, res) => {
+    const nuevoProducto = req.body;
 
-        if (!product) {
-            return res.status(404).json({ error: "Producto no encontrado." });
+    try {
+        await productManager.addProduct(nuevoProducto);
+        res.status(201).json({
+            message: "Producto agregado exitosamente"
+        });
+    } catch (error) {
+        console.error("Error al agregar producto", error);
+        res.status(500).json({
+            error: "Error interno del servidor"
+        });
+    }
+});
+
+// Actualizar un producto por su ID
+router.put("/:pid", async (req, res) => {
+    const id = req.params.pid;
+    const productoActualizado = req.body;
+
+    try {
+        const producto = await productManager.updateProduct(id, productoActualizado);
+        if (!producto) {
+            return res.status(404).json({
+                error: "Producto no encontrado para actualizar"
+            });
         }
 
-        res.json(product);
+        res.json({
+            message: "Producto actualizado exitosamente"
+        });
     } catch (error) {
-        res.status(500).json({ error: "Hubo un problema al buscar el producto." });
+        console.error("Error al actualizar producto", error);
+        res.status(500).json({
+            error: "Error interno del servidor"
+        });
     }
 });
 
-// ** Ruta POST / - Crear un nuevo producto **
-productsRouter.post("/", async (req, res) => {
-    const { title, description, code, price, stock, category, thumbnails = [] } = req.body;
-
-    if (!title || !description || !code || !price || !stock || !category) {
-        return res.status(400).json({ error: "Todos los campos son obligatorios excepto thumbnails." });
-    }
+// Eliminar un producto por su ID
+router.delete("/:pid", async (req, res) => {
+    const id = req.params.pid;
 
     try {
-        const products = await readProductsFile();
-
-        const newProduct = {
-            id: (products.length + 1).toString(),
-            title,
-            description,
-            code,
-            price,
-            status: true,
-            stock,
-            category,
-            thumbnails,
-        };
-
-        products.push(newProduct);
-        await writeProductsFile(products);
-
-        res.status(201).json({ status: "success", message: "Producto creado", product: newProduct });
-    } catch (error) {
-        res.status(500).json({ error: "Hubo un problema al crear el producto." });
-    }
-});
-
-// ** Ruta DELETE /:pid - Eliminar un producto por ID **
-productsRouter.delete("/:pid", async (req, res) => {
-    const { pid } = req.params;
-
-    try {
-        const products = await readProductsFile();
-        const productIndex = products.findIndex((product) => product.id === pid);
-
-        if (productIndex === -1) {
-            return res.status(404).json({ error: "Producto no encontrado." });
+        const producto = await productManager.deleteProduct(id);
+        if (!producto) {
+            return res.status(404).json({
+                error: "Producto no encontrado para eliminar"
+            });
         }
 
-        const deletedProduct = products.splice(productIndex, 1);
-        await writeProductsFile(products);
-
-        res.json({ message: "Producto eliminado con éxito", product: deletedProduct[0] });
+        res.json({
+            message: "Producto eliminado exitosamente"
+        });
     } catch (error) {
-        res.status(500).json({ error: "Hubo un problema al eliminar el producto." });
+        console.error("Error al eliminar producto", error);
+        res.status(500).json({
+            error: "Error interno del servidor"
+        });
     }
 });
 
-// ** Ruta PUT /:pid - Actualizar un producto por ID **
-productsRouter.put("/:pid", async (req, res) => {
-    const { pid } = req.params;
-    const updateFields = req.body;
-
-    try {
-        const products = await readProductsFile();
-        const productIndex = products.findIndex((product) => product.id === pid);
-
-        if (productIndex === -1) {
-            return res.status(404).json({ error: "Producto no encontrado." });
-        }
-
-        const updatedProduct = { ...products[productIndex], ...updateFields };
-        products[productIndex] = updatedProduct;
-
-        await writeProductsFile(products);
-
-        res.json({ message: "Producto actualizado con éxito", product: updatedProduct });
-    } catch (error) {
-        res.status(500).json({ error: "Hubo un problema al actualizar el producto." });
-    }
-});
-
-export default productsRouter;
+export default router;

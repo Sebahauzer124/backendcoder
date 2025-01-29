@@ -1,6 +1,39 @@
-<h1>MIRA MI LISTADO DE PRODUCTOS PA</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+</head>
+<body>
+    <h1>Lista de Productos</h1>
 
-<h2> Lista de Productos </h2>
-<ul id="lista-productos"></ul>
+    <!-- Mostrar los productos -->
+    <div class="products">
+        {{#each products}}
+        <div class="product">
+            <h3>{{this.name}}</h3>
+            <p>Precio: ${{this.price}}</p>
+            <p>Categoría: {{this.category}}</p>
+            <a href="/products/{{this._id}}">Ver detalles</a>
+            <!-- Botón para agregar al carrito -->
+                <button type="submit">Agregar al carrito</button>
+            </form>
+        </div>
+        {{/each}}
+    </div>
 
-<script type="module" src="js/main.js"></script>
+    <!-- Paginación -->
+    <div class="pagination">
+        {{#if hasPrevPage}}
+            <a href="/products?page={{prevPage}}&limit=10">Página anterior</a>
+        {{/if}}
+
+        <span>Página {{page}} de {{totalPages}}</span>
+
+        {{#if hasNextPage}}
+            <a href="/products?page={{nextPage}}&limit=10">Página siguiente</a>
+        {{/if}}
+    </div>
+</body>
+</html>
